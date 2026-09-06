@@ -1,7 +1,115 @@
-<!-- Existing Right Column Ends Here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherGPT Interface</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="ph ph-sparkle"></i>
+                <h1>Weather<span>GPT</span></h1>
             </div>
-            
-            <!-- NEW: Add this right below the closing </div> of right-column, but inside <main> -->
+            <div class="search-bar">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="cityInput" placeholder="Ask WeatherGPT about a city...">
+                <button onclick="getWeatherData()">Analyze</button>
+            </div>
+        </header>
+
+        <div id="warningBanner" class="warning-banner hidden">
+            <i class="ph ph-warning-circle"></i>
+            <div class="warning-text">
+                <strong id="warningTitle">No Active Warnings</strong>
+                <p id="warningDesc">Conditions are normal.</p>
+            </div>
+        </div>
+
+        <main class="dashboard">
+            <section class="card live-data">
+                <div class="card-header">
+                    <h2>Live Forecast</h2>
+                    <span id="locationDisplay">Seattle, WA</span>
+                </div>
+                
+                <div class="main-temp">
+                    <i id="weatherIcon" class="ph ph-cloud-rain"></i>
+                    <h1 id="temperature">--°</h1>
+                    <p id="condition" class="condition">Awaiting input...</p>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <i class="ph ph-drop"></i>
+                        <div>
+                            <span>Humidity</span>
+                            <strong id="humidity">--%</strong>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <i class="ph ph-wind"></i>
+                        <div>
+                            <span>Wind</span>
+                            <strong id="wind">-- mph</strong>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <i class="ph ph-thermometer"></i>
+                        <div>
+                            <span>Feels Like</span>
+                            <strong id="feelsLike">--°</strong>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <i class="ph ph-sun"></i>
+                        <div>
+                            <span>UV Index</span>
+                            <strong id="uvIndex">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="right-column">
+                <section class="card climate-normals">
+                    <div class="card-header">
+                        <h2>Climate Normals (1991-2020)</h2>
+                        <i class="ph ph-chart-line-up"></i>
+                    </div>
+                    <p class="subtext">Historical baseline comparison for this time of year.</p>
+                    
+                    <div class="normals-list">
+                        <div class="normal-item">
+                            <span>Average High</span>
+                            <strong id="normalHigh">--°</strong>
+                            <span id="diffHigh" class="diff">--</span>
+                        </div>
+                        <div class="normal-item">
+                            <span>Average Low</span>
+                            <strong id="normalLow">--°</strong>
+                            <span id="diffLow" class="diff">--</span>
+                        </div>
+                        <div class="normal-item">
+                            <span>Avg Precipitation</span>
+                            <strong id="normalPrecip">-- in</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card ai-summary">
+                    <div class="card-header">
+                        <h2>GPT Analysis</h2>
+                        <i class="ph ph-cpu"></i>
+                    </div>
+                    <p id="aiText">Enter a location above to generate an AI-driven meteorological analysis.</p>
+                </section>
+            </div>
+
+            <!-- New Extended Forecast Section -->
             <section class="card extended-forecast" style="grid-column: 1 / -1; margin-top: 1rem;">
                 <div class="card-header">
                     <h2>Extended Outlook</h2>
@@ -26,4 +134,7 @@
                 </div>
             </section>
         </main>
-        <!-- End of Main Dashboard -->
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
