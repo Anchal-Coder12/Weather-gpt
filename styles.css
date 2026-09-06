@@ -31,36 +31,30 @@ body {
     background-attachment: fixed;
 }
 
+/* REDUCED FADE ON BACKGROUNDS SO IMAGES ARE MORE VISIBLE */
 body.bg-default {
     background-image: radial-gradient(circle at top right, #1f2937 0%, transparent 40%),
                       radial-gradient(circle at bottom left, #111827 0%, transparent 40%);
 }
 
 body.bg-rainy {
-    background-image: linear-gradient(rgba(13, 17, 23, 0.85), rgba(13, 17, 23, 0.95)), 
+    background-image: linear-gradient(rgba(13, 17, 23, 0.4), rgba(13, 17, 23, 0.7)), 
                       url('https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=2000&auto=format&fit=crop');
 }
 
 body.bg-cloudy {
-    background-image: linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.9)), 
+    background-image: linear-gradient(rgba(13, 17, 23, 0.4), rgba(13, 17, 23, 0.7)), 
                       url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=2000&auto=format&fit=crop');
 }
 
 body.bg-stormy {
-    background-image: linear-gradient(rgba(20, 5, 5, 0.85), rgba(13, 17, 23, 0.95)), 
+    background-image: linear-gradient(rgba(20, 5, 5, 0.5), rgba(13, 17, 23, 0.8)), 
                       url('https://images.unsplash.com/photo-1605727216801-e27ce1d0ce5c?q=80&w=2000&auto=format&fit=crop');
 }
 
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: var(--bg-color);
-}
-::-webkit-scrollbar-thumb {
-    background: var(--card-border);
-    border-radius: 4px;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-color); }
+::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
 
 .app-container {
     width: 100%;
@@ -91,14 +85,8 @@ header {
     backdrop-filter: blur(10px);
 }
 
-.logo i {
-    color: var(--accent);
-}
-
-.logo span {
-    font-weight: 300;
-    color: var(--text-muted);
-}
+.logo i { color: var(--accent); }
+.logo span { font-weight: 300; color: var(--text-muted); }
 
 .search-bar {
     display: flex;
@@ -108,15 +96,11 @@ header {
     border-radius: 50px;
     padding: 0.5rem 1rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     backdrop-filter: blur(10px);
 }
 
-.search-bar i {
-    color: var(--text-muted);
-    font-size: 1.2rem;
-}
-
+.search-bar i { color: var(--text-muted); font-size: 1.2rem; }
 .search-bar input {
     background: transparent;
     border: none;
@@ -125,6 +109,21 @@ header {
     width: 100%;
     outline: none;
     font-size: 1rem;
+}
+
+/* Language Dropdown Styling */
+#langSelect {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    outline: none;
+    margin-right: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+#langSelect option {
+    background: var(--bg-color);
+    color: #fff;
 }
 
 .search-bar button {
@@ -137,10 +136,7 @@ header {
     font-weight: 600;
     transition: background 0.2s;
 }
-
-.search-bar button:hover {
-    background: var(--accent-hover);
-}
+.search-bar button:hover { background: var(--accent-hover); }
 
 .warning-banner {
     display: flex;
@@ -154,14 +150,8 @@ header {
     backdrop-filter: blur(10px);
 }
 
-.warning-banner i {
-    color: var(--warning-border);
-    font-size: 2rem;
-}
-
-.hidden {
-    display: none !important;
-}
+.warning-banner i { color: var(--warning-border); font-size: 2rem; }
+.hidden { display: none !important; }
 
 .dashboard {
     display: grid;
@@ -193,45 +183,27 @@ header {
     margin-bottom: 1rem;
 }
 
-.card-header h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.card-header span {
-    color: var(--accent);
-    font-size: 0.9rem;
-}
+.card-header h2 { font-size: 1.2rem; font-weight: 600; }
+.card-header span { color: var(--accent); font-size: 0.9rem; }
 
 .main-temp {
     text-align: center;
     margin: 2rem 0;
 }
+.main-temp i { font-size: 4rem; color: var(--accent); }
 
-.main-temp i {
-    font-size: 4rem;
-    color: var(--accent);
-}
-
+/* Smaller font to fit both C and F */
 .main-temp h1 {
-    font-size: 4rem;
+    font-size: 2.8rem;
     font-weight: 700;
     color: #fff;
     line-height: 1;
     margin: 0.5rem 0;
 }
 
-.condition {
-    font-size: 1.2rem;
-    color: var(--text-muted);
-}
+.condition { font-size: 1.2rem; color: var(--text-muted); }
 
-.metrics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .metric {
     display: flex;
     align-items: center;
@@ -240,39 +212,13 @@ header {
     padding: 0.75rem;
     border-radius: 8px;
 }
+.metric i { font-size: 1.5rem; color: var(--accent); }
+.metric div { display: flex; flex-direction: column; }
+.metric span { font-size: 0.8rem; color: var(--text-muted); }
+.metric strong { font-size: 1rem; color: #fff; }
 
-.metric i {
-    font-size: 1.5rem;
-    color: var(--accent);
-}
-
-.metric div {
-    display: flex;
-    flex-direction: column;
-}
-
-.metric span {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.metric strong {
-    font-size: 1rem;
-    color: #fff;
-}
-
-.subtext {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-}
-
-.normals-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
+.subtext { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+.normals-list { display: flex; flex-direction: column; gap: 0.75rem; }
 .normal-item {
     display: flex;
     justify-content: space-between;
@@ -282,32 +228,14 @@ header {
     border-radius: 8px;
 }
 
-.diff {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-}
+.diff { font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; }
+.diff.above { background: rgba(215, 58, 73, 0.2); color: #ff7b72; }
+.diff.below { background: rgba(46, 160, 67, 0.2); color: var(--accent); }
 
-.diff.above {
-    background: rgba(215, 58, 73, 0.2);
-    color: #ff7b72;
-}
-
-.diff.below {
-    background: rgba(46, 160, 67, 0.2);
-    color: var(--accent);
-}
-
-.ai-summary p {
-    line-height: 1.6;
-    color: #e6edf3;
-    font-size: 0.95rem;
-}
+.ai-summary p { line-height: 1.6; color: #e6edf3; font-size: 0.95rem; }
 
 @media (max-width: 768px) {
-    .dashboard {
-        grid-template-columns: 1fr;
-    }
+    .dashboard { grid-template-columns: 1fr; }
 }
 
 @keyframes slideDown {
