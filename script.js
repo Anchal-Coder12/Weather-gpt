@@ -12,16 +12,21 @@ async function getWeatherData(query = null) {
         input = document.getElementById('cityInput').value.trim();
     }
     
-    // BUG FIX 2: If search bar is empty (e.g., when changing language), 
-    // grab the city that is currently displayed on the screen!
+    // If search bar is empty (e.g., when changing language), grab the city on screen
     if (!input) {
-        // Grab just the city name before the comma
         const currentLocation = document.getElementById('locationDisplay').innerText.split(',')[0];
         if (currentLocation && currentLocation !== "Awaiting input...") {
             input = currentLocation;
         } else {
-            return; // If everything is completely empty, do nothing
+            return; 
         }
+    }
+
+    // ==========================================
+    // NEW POSTHOG CODE: Tracks the searched city
+    // ==========================================
+    if (window.posthog) {
+        posthog.capture('City Searched', { city_name: input });
     }
 
     const targetLang = document.getElementById('langSelect').value;
@@ -148,17 +153,14 @@ function updateDiffBadge(elementId, current, normal) {
     }
 }
 
-// BUG FIX 1: Ask for user's actual location instead of hardcoding Seattle
 window.onload = () => {
     if (navigator.geolocation) {
         document.getElementById('aiText').innerText = "Detecting your local weather...";
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                // Fetch weather using live GPS coordinates!
                 getWeatherData(`${position.coords.latitude},${position.coords.longitude}`);
             },
             (error) => {
-                // If they block location access, just leave it waiting for them to type
                 document.getElementById('aiText').innerText = "Location blocked. Please type a city above.";
             }
         );
