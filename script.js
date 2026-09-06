@@ -1,15 +1,32 @@
 // 1. PASTE YOUR WEATHERAPI KEY HERE:
-const API_KEY = 'YOUR_API_KEY_HERE'; 
+const API_KEY = '949331db874440f9bdf130649260609'; 
 
-async function getWeatherData(defaultCity = null) {
-    let input = defaultCity || document.getElementById('cityInput').value.toLowerCase().trim();
-    if (!input) return;
+async function getWeatherData(query = null) {
+    let input = query;
+    
+    // Prevent Event objects (like button clicks) from being treated as text
+    if (typeof input === 'object') input = null; 
 
-    // Grab the language selected by the user
+    // If no query is passed, check the search bar
+    if (!input) {
+        input = document.getElementById('cityInput').value.trim();
+    }
+    
+    // BUG FIX 2: If search bar is empty (e.g., when changing language), 
+    // grab the city that is currently displayed on the screen!
+    if (!input) {
+        // Grab just the city name before the comma
+        const currentLocation = document.getElementById('locationDisplay').innerText.split(',')[0];
+        if (currentLocation && currentLocation !== "Awaiting input...") {
+            input = currentLocation;
+        } else {
+            return; // If everything is completely empty, do nothing
+        }
+    }
+
     const targetLang = document.getElementById('langSelect').value;
 
     try {
-        // Fetch weather data, asking WeatherAPI for the condition in the correct language
         const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${input}&days=3&alerts=yes&lang=${targetLang}`);
         
         if (!response.ok) throw new Error('City not found');
@@ -26,19 +43,13 @@ async function updateUI(data, lang) {
     const current = data.current;
     const location = data.location;
     
-    // We check the ENGLISH condition text for the background image mapping so it doesn't break on translations
     const englishCondition = data.forecast.forecastday[0].day.condition.text;
     const styleInfo = getWeatherType(englishCondition);
 
-    // 1. Live Data (Now showing both C and F)
     document.getElementById('locationDisplay').innerText = `${location.name}, ${location.region || location.country}`;
     
-    // Format: 72°F | 22°C
     document.getElementById('temperature').innerText = `${Math.round(current.temp_f)}°F | ${Math.round(current.temp_c)}°C`;
-    
-    // Condition uses the native language provided by WeatherAPI
     document.getElementById('condition').innerText = current.condition.text;
-    
     document.getElementById('humidity').innerText = `${current.humidity}%`;
     document.getElementById('wind').innerText = `${Math.round(current.wind_mph)} mph`;
     document.getElementById('feelsLike').innerText = `${Math.round(current.feelslike_f)}°F | ${Math.round(current.feelslike_c)}°C`;
@@ -47,7 +58,6 @@ async function updateUI(data, lang) {
     document.getElementById('weatherIcon').className = `ph ${styleInfo.icon}`;
     document.body.className = `bg-${styleInfo.bg}`;
 
-    // 2. Warnings
     const warningBanner = document.getElementById('warningBanner');
     if (data.alerts && data.alerts.alert && data.alerts.alert.length > 0) {
         document.getElementById('warningTitle').innerText = data.alerts.alert[0].event;
@@ -57,7 +67,6 @@ async function updateUI(data, lang) {
         warningBanner.classList.add('hidden');
     }
 
-    // 3. Extended Outlook (Now showing both C and F)
     const forecastGrid = document.getElementById('forecastGrid');
     forecastGrid.innerHTML = ''; 
 
@@ -78,7 +87,6 @@ async function updateUI(data, lang) {
         `;
     });
 
-    // 4. Mock Climate Normals (Both C and F)
     const mockNormalHighF = Math.round(current.temp_f) - (Math.floor(Math.random() * 10) - 5);
     const mockNormalLowF = Math.round(current.temp_f) - 15;
     const mockNormalHighC = Math.round((mockNormalHighF - 32) * 5/9);
@@ -91,7 +99,6 @@ async function updateUI(data, lang) {
     updateDiffBadge('diffHigh', Math.round(current.temp_f), mockNormalHighF);
     updateDiffBadge('diffLow', Math.round(current.feelslike_f), mockNormalLowF);
 
-    // 5. Multi-Language GPT Analysis via API
     const englishAIText = `Based on current meteorological data, ${location.name} is experiencing ${englishCondition.toLowerCase()} conditions. Wind speeds are tracking at ${Math.round(current.wind_mph)} mph. The temperature is ${Math.round(current.temp_f)}°F (${Math.round(current.temp_c)}°C), though it feels closer to ${Math.round(current.feelslike_f)}°F.`;
     
     if (lang === 'en') {
@@ -99,19 +106,17 @@ async function updateUI(data, lang) {
     } else {
         document.getElementById('aiText').innerText = "Generating translated analysis...";
         try {
-            // Fetch translation from Google Translate's free endpoint
             const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${lang}&dt=t&q=${encodeURIComponent(englishAIText)}`;
             const transRes = await fetch(translateUrl);
             const transData = await transRes.json();
             
-            // Reconstruct the translated sentence
             let translatedText = "";
             transData[0].forEach(part => translatedText += part[0]);
             
             document.getElementById('aiText').innerText = translatedText;
         } catch (e) {
             console.error("Translation API Error:", e);
-            document.getElementById('aiText').innerText = englishAIText; // Fallback to English
+            document.getElementById('aiText').innerText = englishAIText; 
         }
     }
 }
@@ -143,7 +148,22 @@ function updateDiffBadge(elementId, current, normal) {
     }
 }
 
-window.onload = () => getWeatherData("Seattle");
+// BUG FIX 1: Ask for user's actual location instead of hardcoding Seattle
+window.onload = () => {
+    if (navigator.geolocation) {
+        document.getElementById('aiText').innerText = "Detecting your local weather...";
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                // Fetch weather using live GPS coordinates!
+                getWeatherData(`${position.coords.latitude},${position.coords.longitude}`);
+            },
+            (error) => {
+                // If they block location access, just leave it waiting for them to type
+                document.getElementById('aiText').innerText = "Location blocked. Please type a city above.";
+            }
+        );
+    } 
+};
 
 document.getElementById('cityInput').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
