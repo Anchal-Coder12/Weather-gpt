@@ -1,53 +1,25 @@
-// Mock database to simulate an API response from a backend
-const mockWeatherData = {
-    "seattle": {
-        location: "Seattle, WA",
-        temp: 52,
-        condition: "Light Rain",
-        icon: "ph-cloud-rain",
-        humidity: 87,
-        wind: 12,
-        feelsLike: 48,
-        uv: 1,
-        warning: null,
-        normals: {
-            high: 58,
-            low: 44,
-            precip: "3.5"
-        },
-        aiText: "Current conditions are slightly cooler and wetter than the 30-year climate normal for this time of year. The dominant low-pressure system off the coast is driving continuous maritime moisture into the region."
-    },
-    "miami": {
-        location: "Miami, FL",
-        temp: 88,
-        condition: "Severe Thunderstorms",
-        icon: "ph-cloud-lightning",
-        humidity: 75,
-        wind: 25,
-        feelsLike: 95,
-        uv: 8,
-        warning: {
-            title: "Severe Thunderstorm Warning",
-            desc: "Active until 4:00 PM EDT. Expect wind gusts up to 60mph and heavy downpours."
-        },
-        normals: {
-            high: 84,
-            low: 72,
-            precip: "5.1"
-        },
-        aiText: "Temperatures are tracking above the historical baseline. Elevated atmospheric instability is triggering severe convective activity. Recommend staying indoors until the warning expires."
+let weatherDatabase = {};
+
+async function loadData() {
+    try {
+        const response = await fetch('data.json');
+        weatherDatabase = await response.json();
+        updateUI(weatherDatabase['seattle']);
+    } catch (error) {
+        console.error("Error loading weather data:", error);
+        document.getElementById('aiText').innerText = "System Error: Could not connect to the database.";
     }
-};
+}
 
 function getWeatherData() {
     const input = document.getElementById('cityInput').value.toLowerCase().trim();
-    const cityData = mockWeatherData[input] || mockWeatherData["seattle"]; // Default to Seattle if unknown
-
+    const cityData = weatherDatabase[input] || weatherDatabase["seattle"]; 
     updateUI(cityData);
 }
 
 function updateUI(data) {
-    // 1. Update Live Data
+    if (!data) return;
+
     document.getElementById('locationDisplay').innerText = data.location;
     document.getElementById('temperature').innerText = `${data.temp}°`;
     document.getElementById('condition').innerText = data.condition;
@@ -56,11 +28,9 @@ function updateUI(data) {
     document.getElementById('feelsLike').innerText = `${data.feelsLike}°`;
     document.getElementById('uvIndex').innerText = data.uv;
     
-    // Update Icon class
     const iconEl = document.getElementById('weatherIcon');
     iconEl.className = `ph ${data.icon}`;
 
-    // 2. Update Warnings
     const warningBanner = document.getElementById('warningBanner');
     if (data.warning) {
         document.getElementById('warningTitle').innerText = data.warning.title;
@@ -70,18 +40,20 @@ function updateUI(data) {
         warningBanner.classList.add('hidden');
     }
 
-    // 3. Update Climate Normals
     document.getElementById('normalHigh').innerText = `${data.normals.high}°`;
     document.getElementById('normalLow').innerText = `${data.normals.low}°`;
     document.getElementById('normalPrecip').innerText = data.normals.precip;
-
-    // Calculate baseline differences dynamically
     updateDiffBadge('diffHigh', data.temp, data.normals.high);
-    // Rough estimation using feelsLike vs low for demonstration purposes
     updateDiffBadge('diffLow', data.feelsLike, data.normals.low);
 
-    // 4. Update AI Output
     document.getElementById('aiText').innerText = data.aiText;
+
+    document.body.className = ''; 
+    if (data.bgType) {
+        document.body.classList.add(`bg-${data.bgType}`);
+    } else {
+        document.body.classList.add('bg-default');
+    }
 }
 
 function updateDiffBadge(elementId, current, normal) {
@@ -100,7 +72,10 @@ function updateDiffBadge(elementId, current, normal) {
     }
 }
 
-// Load default data on startup
-window.onload = () => {
-    updateUI(mockWeatherData['seattle']);
-};
+window.onload = loadData;
+
+document.getElementById('cityInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        getWeatherData();
+    }
+});
